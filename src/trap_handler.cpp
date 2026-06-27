@@ -1,4 +1,7 @@
 #include "../inc/trap_handler.hpp"
+
+#include "../inc/MemoryAllocator.hpp"
+#include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"
 #include "../inc/thread.hpp"
 #include "../lib/console.h"
@@ -12,8 +15,25 @@ void TrapHandler::handleInternal() {
     if (scause == 8 || scause == 9) {
         sepc += 4;
 
-        _thread::timeSliceCounter = 0;
-        _thread::dispatch();
+        uint64 call = Riscv::ld_a0<uint64>();
+        switch (call) {
+            case MEM_ALLOC: {
+                size_t sizeInBlocks = Riscv::ld_a1<size_t>();
+                void* adr = MemoryAllocator::getInstance().alloc(sizeInBlocks);
+                Riscv::sd_a0(adr);
+                break;
+            }
+            case MEM_FREE: {
+                void* adr = Riscv::ld_a1<void*>();
+                int ret = MemoryAllocator::getInstance().free(adr);
+                Riscv::sd_a0(ret);
+                break;
+            }
+            default:
+                _printString("Unexpected");
+        }
+        // _thread::timeSliceCounter = 0;
+        // _thread::dispatch();
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);
     } else {
