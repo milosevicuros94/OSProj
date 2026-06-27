@@ -1,9 +1,10 @@
 #include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"
+#include "../lib/console.h"
 
 void _printString(const char *string) {
-    uint64 sstatus = Riscv::r_sstatus();
-    Riscv::mc_sstatus(Riscv::SSTATUS_SIE);
+    // uint64 sstatus = Riscv::r_sstatus();
+    // Riscv::mc_sstatus(Riscv::SSTATUS_SIE);
 
     while (*string != '\0')
     {
@@ -11,12 +12,12 @@ void _printString(const char *string) {
         string++;
     }
 
-    Riscv::ms_sstatus(sstatus & Riscv::SSTATUS_SIE ? Riscv::SSTATUS_SIE : 0);
+    // Riscv::ms_sstatus(sstatus & Riscv::SSTATUS_SIE ? Riscv::SSTATUS_SIE : 0);
 }
 
 void _printInteger(uint64 integer) {
-    uint64 sstatus = Riscv::r_sstatus();
-    Riscv::mc_sstatus(Riscv::SSTATUS_SIE);
+    // uint64 sstatus = Riscv::r_sstatus();
+    // Riscv::mc_sstatus(Riscv::SSTATUS_SIE);
 
     static char digits[] = "0123456789";
     char buf[16];
@@ -42,5 +43,5 @@ void _printInteger(uint64 integer) {
 
     while (--i >= 0) { __putc(buf[i]); }
 
-    Riscv::ms_sstatus(sstatus & Riscv::SSTATUS_SIE ? Riscv::SSTATUS_SIE : 0);
+    // Riscv::ms_sstatus(sstatus & Riscv::SSTATUS_SIE ? Riscv::SSTATUS_SIE : 0);
 }

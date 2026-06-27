@@ -88,13 +88,6 @@ void workerBodyD() {
     _printInteger(result);
     _printString("\n");
 
-    uint64 t1 = 0;
-    __asm__ ("mv %[t1], t1" : [t1] "=r" (t1));
-
-    _printString("D: t1=");
-    _printInteger(t1);
-    _printString("\n");
-
     for (; i < 16; i++) {
         _printString("D: i =");
         _printInteger(i);

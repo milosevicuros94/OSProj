@@ -2,7 +2,6 @@
 #define _PRINTING_HPP
 
 #include "../lib/hw.h"
-#include "../lib/console.h"
 
 void _printString(char const *string);
 void _printInteger(uint64 integer);

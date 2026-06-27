@@ -3,8 +3,7 @@
 #include "../inc/workers.hpp"
 #include "../inc/riscv.hpp"
 
-int cntA = 0;
-int cntB = 0;
+extern "C" void handlers();
 
 int main() {
     _thread* threads[5];
@@ -21,7 +20,8 @@ int main() {
     threads[4] = _thread::createThread(workerBodyD);
     _printString("ThreadD created\n");
 
-    Riscv::w_stvec((uint64) &Riscv::supervisorTrap);
+    // OR 1 for vector mode
+    Riscv::w_stvec((uint64)handlers | 1);
     Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
 
     while (!(threads[1]->isFinished() &&

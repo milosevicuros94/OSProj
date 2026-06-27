@@ -20,9 +20,6 @@ public:
     bool isFinished() const { return finished; }
     void setFinished(bool f) { finished = f; }
 
-    uint64 getTimeSlice() const { return timeSlice; }
-    void setTimeSlice(uint64 ts) { timeSlice = ts; }
-
 private:
     _thread(Body body, uint64 timeSlice) :
         body(body),
@@ -47,7 +44,7 @@ private:
     bool finished;
     uint64 timeSlice;
 
-    friend class Riscv;
+    friend class TrapHandler;
 
     static void threadWrapper();
 

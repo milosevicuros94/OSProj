@@ -20,9 +20,6 @@ public:
     // Has to be non-inline function
     static void popSppSpie();
 
-    static void pushRegisters();
-    static void popRegisters();
-
     static uint64 r_scause();
     static void w_scause(uint64 scause);
 
@@ -48,11 +45,6 @@ public:
     static void mc_sstatus(uint64 mask);
     static uint64 r_sstatus();
     static void w_sstatus(uint64 sstatus);
-
-    static void supervisorTrap();
-
-private:
-    static void handleSupervisorTrap();
 };
 
 inline uint64 Riscv::r_scause() {

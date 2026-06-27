@@ -4,6 +4,12 @@
 #include "../inc/syscall_c.h"
 
 class Scheduler {
+public:
+    static Scheduler& getInstance();
+
+    void putReady(thread_t thread);
+    thread_t getReady();
+
 private:
     Scheduler() = default;
     ~Scheduler() = default;
@@ -12,13 +18,6 @@ private:
     thread_t readyQueueTail = nullptr;
 
     thread_t sleepQueueHead = nullptr;
-
-public:
-    static Scheduler& getInstance();
-
-    void putReady(thread_t thread);
-    thread_t getReady();
-
 };
 
 #endif
