@@ -37,4 +37,3 @@ void thread_dispatch() {
 int time_sleep(time_t time) {
     return ecall<int>(TIME_SLEEP, time);
 }
-

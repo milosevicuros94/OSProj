@@ -11,6 +11,17 @@ extern "C" void handlers();
 //     userMain();
 // }
 
+struct IdleDone {
+    volatile bool done = false;
+};
+
+void idle(void* arg) {
+    IdleDone *done = (IdleDone *) arg;
+    while (!done->done) {
+        thread_dispatch();
+    }
+}
+
 int main() {
     // OR 1 for vector mode
     Riscv::w_stvec((uint64)handlers | 1);
@@ -18,31 +29,43 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->createMainThread();
 
-    // thread_t handle = nullptr;
-    // thread_create(&handle, workerBodyA, nullptr);
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
-    // thread_t handle1 = nullptr;
-    // thread_t handle2 = nullptr;
-    // thread_t handle3 = nullptr;
-
     thread_create(&handle0, workerBodyA, mainThread);
     _printString("ThreadA created\n");
-    // thread_create(&handle1, workerBodyB, mainThread);
-    // _printString("ThreadB created\n");
-    // thread_create(&handle2, workerBodyC, mainThread);
-    // _printString("ThreadC created\n");
-    // thread_create(&handle3, workerBodyD, mainThread);
-    // _printString("ThreadD created\n");
-    //
-    // Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
-    //
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workerBodyB, mainThread);
+    _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workerBodyC, mainThread);
+    _printString("ThreadC created\n");
+
+    thread_t handle3 = nullptr;
+    thread_create(&handle3, workerBodyD, mainThread);
+    _printString("ThreadD created\n");
+
+    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
+
     // while (!(handle0->getState() == _thread::FINISHED &&
     //     handle1->getState() == _thread::FINISHED &&
     //     handle2->getState() == _thread::FINISHED &&
     //     handle3->getState() == _thread::FINISHED)) {
     //     thread_dispatch();
     // }
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED &&
+        handle2->getState() == _thread::FINISHED &&
+        handle3->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+    }
+
+    done.done = true;
 
     // for (auto &thread : threads) {
     //     delete thread;

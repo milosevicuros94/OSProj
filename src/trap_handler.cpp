@@ -63,15 +63,18 @@ void TrapHandler::handleInternal() {
             default:
                 _printString("Unexpected");
         }
-
-        Riscv::w_sstatus(sstatus);
-        Riscv::w_sepc(sepc);
     } else {
-        // unexpected trap cause
-        // print(scause)
-        // print(sepc)
-        // print(stval)
+        _printString("Unexpected trap cause\n");
+        // _printInteger(scause);
+        // _printString("\n");
+        // _printInteger(sepc);
+        // _printString("\n");
+        // _printInteger(Riscv::r_stval());
+        // _printString("\n");
     }
+
+    Riscv::w_sstatus(sstatus);
+    Riscv::w_sepc(sepc);
 }
 
 void TrapHandler::handleTimer() {
