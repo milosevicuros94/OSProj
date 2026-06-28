@@ -11,24 +11,72 @@ void Scheduler::putReady(thread_t thread) {
         readyQueueHead = thread;
         readyQueueTail = thread;
     } else {
-        readyQueueTail->next = thread;
+        readyQueueTail->setNext(thread);
         readyQueueTail = thread;
     }
 
-    readyQueueTail->next = nullptr;
+    readyQueueTail->setNext(nullptr);
 }
 
 thread_t Scheduler::getReady() {
     thread_t readyThread = readyQueueHead;
 
     if (readyQueueHead != nullptr) {
-        readyQueueHead = readyQueueHead->next;
+        readyQueueHead = readyQueueHead->getNext();
         if (readyQueueHead == nullptr) {
             readyQueueTail = nullptr;
         }
 
-        readyThread->next = nullptr;
+        readyThread->setNext(nullptr);
     }
 
     return readyThread;
+}
+
+void Scheduler::insertSleeping(thread_t thread) {
+    unsigned sleepTime = thread->getSleepTime();
+
+    thread_t cur = sleepQueueHead;
+    thread_t prev = nullptr;
+    while (cur != nullptr && cur->getSleepTime() <= sleepTime) {
+        sleepTime -= cur->getSleepTime();
+        prev = cur;
+        cur = cur->getNext();
+    }
+
+    if (prev == nullptr) {
+        if (cur == nullptr) {
+            sleepQueueHead = thread;
+        } else {
+            sleepQueueHead->decrementSleepTime(sleepTime);
+            thread->setNext(sleepQueueHead);
+            sleepQueueHead = thread;
+        }
+    } else if (cur == nullptr) {
+        thread->setSleepTime(sleepTime);
+        thread->setNext(nullptr);
+        prev->setNext(thread);
+    } else {
+        cur->decrementSleepTime(sleepTime);
+        thread->setSleepTime(sleepTime);
+        thread->setNext(cur);
+        prev->setNext(thread);
+    }
+
+    thread->setState(_thread::SLEEPING);
+}
+
+void Scheduler::timerTick() {
+    if (sleepQueueHead != nullptr) {
+        sleepQueueHead->decrementSleepTime();
+
+        while (sleepQueueHead != nullptr && sleepQueueHead->getSleepTime() == 0) {
+            thread_t wakeUp = sleepQueueHead;
+            sleepQueueHead = sleepQueueHead->getNext();
+
+            wakeUp->setNext(nullptr);
+            wakeUp->setState(_thread::READY);
+            putReady(wakeUp);
+        }
+    }
 }

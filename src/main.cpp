@@ -27,10 +27,11 @@ int main() {
     //
     // OR 1 for vector mode
     Riscv::w_stvec((uint64)handlers | 1);
-    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
 
-    _thread* mainThread = _thread::createThread(nullptr);
+    _thread* mainThread = new _thread();
     _thread::running = mainThread;
+
+    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
 
     // _thread* userThread = _thread::createThread(userMainWrapper);
 
@@ -52,6 +53,8 @@ int main() {
     mem_free(third);
     mem_free(first);
     mem_free(forth);
+
+    _printString("Main done\n");
 
     return 0;
 }

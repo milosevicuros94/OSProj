@@ -10,6 +10,9 @@ public:
     void putReady(thread_t thread);
     thread_t getReady();
 
+    void insertSleeping(thread_t thread);
+    void timerTick();
+
 private:
     Scheduler() = default;
     ~Scheduler() = default;

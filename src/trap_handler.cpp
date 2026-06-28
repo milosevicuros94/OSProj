@@ -2,6 +2,7 @@
 #include "../inc/MemoryAllocator.hpp"
 #include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"
+#include "../inc/scheduler.hpp"
 #include "../inc/thread.hpp"
 #include "../lib/console.h"
 #include "../lib/hw.h"
@@ -31,8 +32,6 @@ void TrapHandler::handleInternal() {
             default:
                 _printString("Unexpected");
         }
-        // _thread::timeSliceCounter = 0;
-        // _thread::dispatch();
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);
     } else {
@@ -45,6 +44,7 @@ void TrapHandler::handleInternal() {
 
 void TrapHandler::handleTimer() {
     _thread::timeSliceCounter++;
+    Scheduler::getInstance().timerTick();
 
     Riscv::mc_sip(Riscv::SIP_SSIP);
 
