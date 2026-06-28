@@ -29,9 +29,41 @@ void TrapHandler::handleInternal() {
                 Riscv::sd_a0(ret);
                 break;
             }
+            case THREAD_CREATE: {
+                thread_t* handle = Riscv::ld_a1<thread_t*>();
+                _thread::Body startRoutine = Riscv::ld_a2<_thread::Body>();
+                void* arg = Riscv::ld_a3<void*>();
+                void* stack = Riscv::ld_a4<void*>();
+
+                if (handle == nullptr || startRoutine == nullptr || stack == nullptr) {
+                    Riscv::sd_a0(-1);
+                } else {
+                    thread_t t = new _thread(startRoutine, arg, stack);
+                    *handle = t;
+                    Riscv::sd_a0(0);
+                }
+                break;
+            }
+            case THREAD_DISPATCH: {
+                _thread::dispatch();
+                break;
+            }
+            case THREAD_EXIT: {
+                _thread::exit();
+                _printString("Thread exit failed");
+                Riscv::sd_a0(-1);
+                break;
+            }
+            case TIME_SLEEP: {
+                time_t time = Riscv::ld_a1<time_t>();
+                _thread::sleep(time);
+                Riscv::sd_a0(0);
+                break;
+            }
             default:
                 _printString("Unexpected");
         }
+
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);
     } else {
@@ -43,15 +75,14 @@ void TrapHandler::handleInternal() {
 }
 
 void TrapHandler::handleTimer() {
-    _thread::timeSliceCounter++;
-    Scheduler::getInstance().timerTick();
-
     Riscv::mc_sip(Riscv::SIP_SSIP);
 
-    if (_thread::timeSliceCounter >= _thread::running->timeSlice) {
+    Scheduler::getInstance().timerTick();
+    bool shouldSwitch = _thread::timerTick();
+
+    if (shouldSwitch) {
         uint64 sepc = Riscv::r_sepc();
         uint64 sstatus = Riscv::r_sstatus();
-        _thread::timeSliceCounter = 0;
         _thread::dispatch();
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);

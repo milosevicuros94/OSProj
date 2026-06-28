@@ -5,9 +5,9 @@
 
 // TODO: DELETE THIS
 
-extern void workerBodyA();
-extern void workerBodyB();
-extern void workerBodyC();
-extern void workerBodyD();
+extern void workerBodyA(void*);
+extern void workerBodyB(void*);
+extern void workerBodyC(void*);
+extern void workerBodyD(void*);
 
 #endif

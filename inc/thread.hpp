@@ -11,18 +11,14 @@ public:
         READY,
         SLEEPING,
         SEM_WAIT,
-        THREAD_WAIT,
         FINISHED
     };
 
-    _thread();
-    _thread(Body startRoutine, void* arg, void* stack);
     ~_thread() { mem_free(stack); }
 
-    static void yield();
-    static _thread* running;
+    void createMainThread();
 
-    void exit();
+    static _thread* running;
 
     ThreadState getState() { return state; }
     void setState(ThreadState newState) { state = newState; }
@@ -30,9 +26,9 @@ public:
     _thread* getNext() { return next; }
     void setNext(_thread* t) { next = t; }
 
-    unsigned getSleepTime() { return sleepTime; }
-    void setSleepTime(unsigned newSleepTime) { sleepTime = newSleepTime; }
-    void decrementSleepTime(unsigned decrement = 1) { sleepTime -= decrement; }
+    time_t getSleepTime() { return sleepTime; }
+    void setSleepTime(time_t newSleepTime) { sleepTime = newSleepTime; }
+    void decrementSleepTime(time_t decrement = 1) { sleepTime -= decrement; }
 
 private:
     struct Context {
@@ -40,9 +36,15 @@ private:
         uint64 sp;
     };
 
+    _thread();
+    _thread(Body startRoutine, void* arg, void* stack);
+
     static void threadWrapper();
+    static void exit();
     static void dispatch();
     static void contextSwitch(Context* oldContext, Context* newContext);
+    static bool timerTick();
+    static void sleep(time_t time);
 
     static uint64 timeSliceCounter;
 
@@ -53,9 +55,8 @@ private:
     ThreadState state;
     uint64 timeSlice;
     _thread* next;
-    _thread* joinQueue;
     unsigned semResources;
-    unsigned sleepTime;
+    time_t sleepTime;
 
     friend class TrapHandler;
 
