@@ -1,5 +1,4 @@
 #include "../inc/trap_handler.hpp"
-
 #include "../inc/MemoryAllocator.hpp"
 #include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"

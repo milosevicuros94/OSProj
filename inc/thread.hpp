@@ -1,5 +1,5 @@
-#ifndef _THREAD_HPP
-#define _THREAD_HPP
+#ifndef _THREAD_HPP_
+#define _THREAD_HPP_
 
 #include "../lib/hw.h"
 #include "scheduler.hpp"

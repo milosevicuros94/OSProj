@@ -1,5 +1,5 @@
-#ifndef _SYSCALL_C_H
-#define _SYSCALL_C_H
+#ifndef _SYSCALL_C_H_
+#define _SYSCALL_C_H_
 
 #include "../lib/hw.h"
 
@@ -29,8 +29,8 @@ typedef _thread* thread_t;
 // int thread_exit();
 // void thread_dispatch();
 //
-// class _sem;
-// typedef _sem* sem_t;
+class _sem;
+typedef _sem* sem_t;
 // int sem_open(sem_t* handle, unsigned init);
 // int sem_close(sem_t handle);
 // int sem_wait(sem_t id);

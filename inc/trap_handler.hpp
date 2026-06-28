@@ -1,5 +1,5 @@
-#ifndef _TRAP_HANDLER_HPP
-#define _TRAP_HANDLER_HPP
+#ifndef _TRAP_HANDLER_HPP_
+#define _TRAP_HANDLER_HPP_
 
 class TrapHandler {
 public:

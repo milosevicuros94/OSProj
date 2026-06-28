@@ -1,5 +1,5 @@
-#ifndef _SCHEDULER_HPP
-#define _SCHEDULER_HPP
+#ifndef _SCHEDULER_HPP_
+#define _SCHEDULER_HPP_
 
 #include "../inc/syscall_c.h"
 

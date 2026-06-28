@@ -1,5 +1,5 @@
-#ifndef _PRINTING_HPP
-#define _PRINTING_HPP
+#ifndef _PRINTING_HPP_
+#define _PRINTING_HPP_
 
 #include "../lib/hw.h"
 

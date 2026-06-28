@@ -1,5 +1,5 @@
-#ifndef _RISCV_HPP
-#define _RISCV_HPP
+#ifndef _RISCV_HPP_
+#define _RISCV_HPP_
 
 #include "../lib/hw.h"
 
@@ -16,15 +16,6 @@ public:
         SSTATUS_SPIE = (1 << 5),
         SSTATUS_SPP = (1 << 8)
     };
-
-    // static constexpr int A0 = 10;
-    // static constexpr int A1 = 11;
-    // static constexpr int A2 = 12;
-    // static constexpr int A3 = 13;
-    // static constexpr int A4 = 14;
-    // static constexpr int A5 = 15;
-    // static constexpr int A6 = 16;
-    // static constexpr int A7 = 17;
 
     enum ArgRegs {
         A0 = 10,

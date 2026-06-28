@@ -1,10 +1,14 @@
 #include "../inc/thread.hpp"
 #include "../inc/printing.hpp"
-#include "../inc/workers.hpp"
 #include "../inc/riscv.hpp"
-#include "../inc/MemoryAllocator.hpp"
 
 extern "C" void handlers();
+
+// extern void userMain();
+//
+// void userMainWrapper(void*) {
+//     userMain();
+// }
 
 int main() {
     // _thread* threads[5];
@@ -21,20 +25,18 @@ int main() {
     // threads[4] = _thread::createThread(workerBodyD);
     // _printString("ThreadD created\n");
     //
-    _thread* mainThread = _thread::createThread(nullptr);
-    _thread::running = mainThread;
-
     // OR 1 for vector mode
     Riscv::w_stvec((uint64)handlers | 1);
     Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
-    //
-    // while (!(threads[1]->isFinished() &&
-    //     threads[2]->isFinished() &&
-    //     threads[3]->isFinished() &&
-    //     threads[4]->isFinished())) {
+
+    _thread* mainThread = _thread::createThread(nullptr);
+    _thread::running = mainThread;
+
+    // _thread* userThread = _thread::createThread(userMainWrapper);
+
+    // while (!(userThread->isFinished())) {
     //     _thread::yield();
     // }
-    //
     // for (auto &thread : threads) {
     //     delete thread;
     // }
