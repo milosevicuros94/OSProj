@@ -34,10 +34,6 @@ int main() {
     IdleDone done;
     thread_create(&idleThread, idle, &done);
 
-    // while (idleThread->getState() != _thread::FINISHED) {
-    //     thread_dispatch();
-    // }
-
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerBodyA, mainThread);
     _printString("ThreadA created\n");
@@ -72,6 +68,12 @@ int main() {
     delete handle1;
     delete handle2;
     delete handle3;
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
 
     // void* first = mem_alloc(20 * MEM_BLOCK_SIZE);
     // void* second = mem_alloc(50 * MEM_BLOCK_SIZE);
