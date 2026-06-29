@@ -113,6 +113,14 @@ void testThreads() {
     delete idleThread;
 }
 
+// TODO: Test sem:
+// Signal on a sem that no one is waiting on
+// Wait with several threads and call close
+// Try doing stuff while closed
+// Signal frees all waiting threads
+// Signal frees a subset of waiting threads
+// Multiple signals needed to free first thread
+
 int main() {
     // OR 1 for vector mode
     Riscv::w_stvec((uint64)handlers | 1);
@@ -120,8 +128,8 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
-    // testThreads();
-    testMemory(mainThread);
+    testThreads();
+    // testMemory(mainThread);
 
     _printString("Main done\n");
 

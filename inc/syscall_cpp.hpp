@@ -4,7 +4,9 @@
 #include "syscall_c.h"
 
 void* operator new (size_t size);
-void operator delete (void* ptr);
+void operator delete (void* ptr) noexcept;
+void *operator new[](size_t);
+void operator delete[](void*) noexcept;
 
 class Thread {
 public:

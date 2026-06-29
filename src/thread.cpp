@@ -69,6 +69,13 @@ void _thread::sleep(time_t time) {
     dispatch();
 }
 
+void _thread::wakeUp() {
+    next = nullptr;
+    state = READY;
+    semResources = 0;
+    Scheduler::getInstance().putReady(this);
+}
+
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
     running->startRoutine(running->arg);

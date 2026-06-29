@@ -20,6 +20,8 @@ public:
 
     static _thread* running;
 
+    void wakeUp();
+
     inline ThreadState getState() { return state; }
     inline void setState(ThreadState newState) { state = newState; }
 
@@ -29,6 +31,10 @@ public:
     inline time_t getSleepTime() { return sleepTime; }
     inline void setSleepTime(time_t newSleepTime) { sleepTime = newSleepTime; }
     inline void decrementSleepTime(time_t decrement = 1) { sleepTime -= decrement; }
+
+    inline unsigned getSemResources() { return semResources; }
+    inline void setSemResources(unsigned newResources) { semResources = newResources; }
+    inline void decrementSemResources(unsigned decrement = 1) { semResources -= decrement; }
 
 private:
     struct Context {

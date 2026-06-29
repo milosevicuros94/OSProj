@@ -71,12 +71,10 @@ void Scheduler::timerTick() {
         sleepQueueHead->decrementSleepTime();
 
         while (sleepQueueHead != nullptr && sleepQueueHead->getSleepTime() == 0) {
-            thread_t wakeUp = sleepQueueHead;
+            thread_t t = sleepQueueHead;
             sleepQueueHead = sleepQueueHead->getNext();
 
-            wakeUp->setNext(nullptr);
-            wakeUp->setState(_thread::READY);
-            putReady(wakeUp);
+            t->wakeUp();
         }
     }
 }
