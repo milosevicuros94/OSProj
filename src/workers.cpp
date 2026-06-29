@@ -12,7 +12,7 @@ void workerBodyA(void* a) {
             for (uint64 k = 0; k < 30000; k++) {
                 // busy wait
             }
-            // TCB::yield();
+            thread_dispatch();
         }
     }
 }
@@ -27,7 +27,7 @@ void workerBodyB(void* a) {
             for (uint64 k = 0; k < 30000; k++) {
                 // busy wait
             }
-            // TCB::yield();
+            thread_dispatch();
         }
     }
 }

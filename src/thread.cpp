@@ -44,7 +44,9 @@ void _thread::dispatch() {
     if (oldRunning->getState() == READY) {
         Scheduler::getInstance().putReady(oldRunning);
     }
+
     running = Scheduler::getInstance().getReady();
+    timeSliceCounter = 0;
 
     if (oldRunning != running) {
         contextSwitch(&oldRunning->context, &running->context);
@@ -55,12 +57,7 @@ void _thread::dispatch() {
 bool _thread::timerTick() {
     timeSliceCounter++;
 
-    if (timeSliceCounter >= running->timeSlice) {
-        timeSliceCounter = 0;
-        return true;
-    }
-
-    return false;
+    return timeSliceCounter >= running->timeSlice;
 }
 
 void _thread::sleep(time_t time) {
