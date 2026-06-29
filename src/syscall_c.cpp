@@ -1,7 +1,7 @@
 #include "../inc/syscall_c.h"
 
 template <typename T> T ecall(syscall syscall, ...) {
-    T ret;
+    T volatile ret;
     __asm__ volatile ("ecall");
     __asm__ volatile("mv %[ret], a0" : [ret] "=r"(ret));
     return ret;

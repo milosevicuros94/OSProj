@@ -16,7 +16,7 @@ public:
 
     ~_thread() { mem_free(stack); }
 
-    void createMainThread();
+    void initMainThread();
 
     static _thread* running;
 
