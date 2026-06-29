@@ -64,9 +64,8 @@ void _thread::sleep(time_t time) {
     if (time == 0) return;
 
     running->sleepTime = time;
-    running->state = SLEEPING;
-
     Scheduler::getInstance().insertSleeping(running);
+
     dispatch();
 }
 

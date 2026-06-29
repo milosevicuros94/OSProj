@@ -3,6 +3,8 @@
 #include "../inc/printing.hpp"
 
 void workerBodyA(void* a) {
+    time_sleep(5);
+
     for (uint64 i = 0; i < 10; i++) {
         _printString("A: i =");
         _printInteger(i);
@@ -12,12 +14,14 @@ void workerBodyA(void* a) {
             for (uint64 k = 0; k < 30000; k++) {
                 // busy wait
             }
-            thread_dispatch();
+            // thread_dispatch();
         }
     }
 }
 
 void workerBodyB(void* a) {
+    time_sleep(6);
+
     for (uint64 i = 0; i < 16; i++) {
         _printString("B: i =");
         _printInteger(i);
@@ -27,7 +31,7 @@ void workerBodyB(void* a) {
             for (uint64 k = 0; k < 30000; k++) {
                 // busy wait
             }
-            thread_dispatch();
+            // thread_dispatch();
         }
     }
 }
@@ -39,6 +43,7 @@ static uint64 fibonacci(uint64 n) {
 }
 
 void workerBodyC(void* a) {
+    time_sleep(15);
     uint8 i = 0;
     for (; i < 3; i++) {
         _printString("C: i =");
@@ -72,6 +77,8 @@ void workerBodyC(void* a) {
 }
 
 void workerBodyD(void* a) {
+    time_sleep(6);
+
     uint8 i = 10;
     for (; i < 13; i++) {
         _printString("D: i =");
