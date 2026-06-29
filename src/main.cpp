@@ -20,6 +20,7 @@ void idle(void* arg) {
     while (!done->done) {
         thread_dispatch();
     }
+    _printString("Idle done\n");
 }
 
 int main() {
@@ -32,6 +33,10 @@ int main() {
     thread_t idleThread = nullptr;
     IdleDone done;
     thread_create(&idleThread, idle, &done);
+
+    // while (idleThread->getState() != _thread::FINISHED) {
+    //     thread_dispatch();
+    // }
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerBodyA, mainThread);
@@ -49,12 +54,7 @@ int main() {
     thread_create(&handle3, workerBodyD, mainThread);
     _printString("ThreadD created\n");
 
-    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
-
-    // while (!(handle0->getState() == _thread::FINISHED &&
-    //     handle1->getState() == _thread::FINISHED &&
-    //     handle2->getState() == _thread::FINISHED &&
-    //     handle3->getState() == _thread::FINISHED)) {
+    // while (handle0->getState() != _thread::FINISHED) {
     //     thread_dispatch();
     // }
 
@@ -65,11 +65,13 @@ int main() {
         thread_dispatch();
     }
 
+    _printString("Threads done\n");
     done.done = true;
 
-    // for (auto &thread : threads) {
-    //     delete thread;
-    // }
+    delete handle0;
+    delete handle1;
+    delete handle2;
+    delete handle3;
 
     // void* first = mem_alloc(20 * MEM_BLOCK_SIZE);
     // void* second = mem_alloc(50 * MEM_BLOCK_SIZE);

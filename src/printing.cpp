@@ -1,6 +1,7 @@
 #include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"
-#include "../lib/console.h"
+# include "../inc/syscall_c.h"
+
 
 void _printString(const char *string) {
     // uint64 sstatus = Riscv::r_sstatus();
@@ -8,7 +9,7 @@ void _printString(const char *string) {
 
     while (*string != '\0')
     {
-        __putc(*string);
+        putc(*string);
         string++;
     }
 
@@ -41,7 +42,7 @@ void _printInteger(uint64 integer) {
     if (neg)
         buf[i++] = '-';
 
-    while (--i >= 0) { __putc(buf[i]); }
+    while (--i >= 0) { putc(buf[i]); }
 
     // Riscv::ms_sstatus(sstatus & Riscv::SSTATUS_SIE ? Riscv::SSTATUS_SIE : 0);
 }

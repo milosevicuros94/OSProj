@@ -9,8 +9,8 @@
 
 void TrapHandler::handleInternal() {
     uint64 scause = Riscv::r_scause();
-    uint64 sepc = Riscv::r_sepc();
-    uint64 sstatus = Riscv::r_sstatus();
+    volatile uint64 sepc = Riscv::r_sepc();
+    volatile uint64 sstatus = Riscv::r_sstatus();
 
     if (scause == 8 || scause == 9) {
         sepc += 4;
@@ -60,9 +60,22 @@ void TrapHandler::handleInternal() {
                 Riscv::sd_a0(0);
                 break;
             }
+            case GETC: {
+                char c = __getc();
+                Riscv::sd_a0(c);
+                break;
+            }
+            case PUTC: {
+                char c = Riscv::ld_a1<char>();
+                __putc(c);
+                break;
+            }
             default:
                 _printString("Unexpected");
         }
+
+        Riscv::w_sstatus(sstatus);
+        Riscv::w_sepc(sepc);
     } else {
         _printString("Unexpected trap cause\n");
         // _printInteger(scause);
@@ -72,9 +85,6 @@ void TrapHandler::handleInternal() {
         // _printInteger(Riscv::r_stval());
         // _printString("\n");
     }
-
-    Riscv::w_sstatus(sstatus);
-    Riscv::w_sepc(sepc);
 }
 
 void TrapHandler::handleTimer() {
@@ -84,8 +94,8 @@ void TrapHandler::handleTimer() {
     bool shouldSwitch = _thread::timerTick();
 
     if (shouldSwitch) {
-        uint64 sepc = Riscv::r_sepc();
-        uint64 sstatus = Riscv::r_sstatus();
+        volatile uint64 sepc = Riscv::r_sepc();
+        volatile uint64 sstatus = Riscv::r_sstatus();
         _thread::dispatch();
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);

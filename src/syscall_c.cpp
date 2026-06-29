@@ -37,3 +37,11 @@ void thread_dispatch() {
 int time_sleep(time_t time) {
     return ecall<int>(TIME_SLEEP, time);
 }
+
+
+char getc() {
+    return ecall<char>(GETC);
+}
+void putc(char c) {
+    ecall<void>(PUTC, c);
+}

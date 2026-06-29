@@ -76,5 +76,5 @@ void _thread::sleep(time_t time) {
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
     running->startRoutine(running->arg);
-    exit();
+    thread_exit();
 }

@@ -41,8 +41,8 @@ typedef _sem* sem_t;
 typedef unsigned long time_t;
 int time_sleep(time_t time);
 
-// const int EOF = -1;
-// char getc();
-// void putc(char c);
+const int EOF = -1;
+char getc();
+void putc(char c);
 
 #endif

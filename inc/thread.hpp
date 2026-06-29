@@ -20,15 +20,15 @@ public:
 
     static _thread* running;
 
-    ThreadState getState() { return state; }
-    void setState(ThreadState newState) { state = newState; }
+    inline ThreadState getState() { return state; }
+    inline void setState(ThreadState newState) { state = newState; }
 
-    _thread* getNext() { return next; }
-    void setNext(_thread* t) { next = t; }
+    inline _thread* getNext() { return next; }
+    inline void setNext(_thread* t) { next = t; }
 
-    time_t getSleepTime() { return sleepTime; }
-    void setSleepTime(time_t newSleepTime) { sleepTime = newSleepTime; }
-    void decrementSleepTime(time_t decrement = 1) { sleepTime -= decrement; }
+    inline time_t getSleepTime() { return sleepTime; }
+    inline void setSleepTime(time_t newSleepTime) { sleepTime = newSleepTime; }
+    inline void decrementSleepTime(time_t decrement = 1) { sleepTime -= decrement; }
 
 private:
     struct Context {
