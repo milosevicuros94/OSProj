@@ -55,7 +55,6 @@ void TrapHandler::handleInternal() {
             }
             case THREAD_EXIT: {
                 _thread::exit();
-                _printString("Thread exit failed");
                 Riscv::sd_a0(-10);
 
                 break;

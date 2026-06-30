@@ -1,5 +1,4 @@
 #include "../inc/thread.hpp"
-#include "../inc/printing.hpp"
 #include "../inc/riscv.hpp"
 #include "../inc/tests.hpp"
 
@@ -18,7 +17,6 @@ void idle(void* arg) {
     while (!done->done) {
         thread_dispatch();
     }
-    _printString("Idle done\n");
 }
 
 int main() {
@@ -31,16 +29,19 @@ int main() {
     IdleDone done;
     thread_create(&idleThread, idle, &done);
 
-    runAllTests(mainThread);
+    thread_t userMain = nullptr;
+    thread_create(&userMain, userMainWrapper, nullptr);
+
+    while (userMain->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
 
     done.done = true;
     while (idleThread->getState() != _thread::FINISHED) {
         thread_dispatch();
     }
     delete idleThread;
-
-    mem_free(mainThread);
-    _printString("Main done.");
+    delete mainThread;
 
     return 0;
 }

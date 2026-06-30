@@ -19,7 +19,7 @@ void operator delete[] (void* ptr) noexcept {
 /* ---- Thread ---- */
 Thread::Thread(void (*body)(void*), void* arg) : myHandle(nullptr), body(body), arg(arg) {}
 
-Thread::~Thread() {}
+Thread::~Thread() = default;
 
 int Thread::start() {
     using Body = void(*)(void*);
