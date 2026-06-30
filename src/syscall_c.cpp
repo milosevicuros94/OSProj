@@ -21,8 +21,12 @@ int mem_free(void* ptr) {
 }
 
 int thread_create(thread_t* handle, void(*start_routine)(void*), void* arg) {
-    void* stack = mem_alloc(DEFAULT_STACK_SIZE);
-    return ecall<int>(THREAD_CREATE, handle, start_routine, arg, stack);
+    if (handle != nullptr) {
+        void* stack = mem_alloc(DEFAULT_STACK_SIZE);
+        return ecall<int>(THREAD_CREATE, handle, start_routine, arg, stack);
+    }
+
+    return -10;
 }
 
 int thread_exit() {
@@ -33,11 +37,33 @@ void thread_dispatch() {
     ecall<void>(THREAD_DISPATCH);
 }
 
+int sem_open(sem_t* handle, unsigned init) {
+    return ecall<int>(SEM_OPEN, handle, init);
+}
+
+int sem_close(sem_t handle) {
+    return ecall<int>(SEM_CLOSE, handle);
+}
+
+int sem_wait(sem_t id) {
+    return ecall<int>(SEM_WAIT, id);
+}
+
+int sem_signal(sem_t id) {
+    return ecall<int>(SEM_SIGNAL, id);
+}
+
+int sem_wait_n(sem_t id, unsigned n) {
+    return ecall<int>(SEM_WAIT_N, id, n);
+}
+
+int sem_signal_n(sem_t id, unsigned n) {
+    return ecall<int>(SEM_SIGNAL_N, id, n);
+}
 
 int time_sleep(time_t time) {
     return ecall<int>(TIME_SLEEP, time);
 }
-
 
 char getc() {
     return ecall<char>(GETC);

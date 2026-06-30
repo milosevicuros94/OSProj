@@ -1,6 +1,7 @@
 #include "../lib/hw.h"
 #include "../inc/workers.hpp"
 #include "../inc/printing.hpp"
+#include "../inc/semaphore.hpp"
 
 void workerBodyA(void* a) {
     time_sleep(5);
@@ -102,4 +103,51 @@ void workerBodyD(void* a) {
     }
 
     // _thread::yield();
+}
+
+void workerSemWaitCloseA(void* ptr) {
+    _printString("A waiting\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait(sem);
+    _printString("A unblocked. Wait ret: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+void workerSemWaitCloseB(void* ptr) {
+    _printString("B waiting\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait(sem);
+    _printString("B unblocked. Wait ret: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+void workerSemWaitCloseC(void* ptr)  {
+    _printString("C waiting\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait(sem);
+    _printString("C unblocked. Wait ret: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+void workerSemWaitCloser(void* ptr) {
+    _printString("Closer sleeping\n");
+    time_sleep(100);
+
+    _printString("Closing sem\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_close(sem);
+    _printString("Closed sem. Close ret: ");
+    _printInteger(ret);
+    _printString("\n");
+
+    ret = sem_close(sem);
+    _printString("Second close. Close ret: ");
+    _printInteger(ret);
+    _printString("\n");
 }

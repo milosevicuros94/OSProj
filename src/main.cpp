@@ -26,50 +26,102 @@ void idle(void* arg) {
 
 void testMemory(_thread* mainThread) {
     uint64 startAddress = ((uint64)HEAP_START_ADDR + MEM_BLOCK_SIZE - 1) / MEM_BLOCK_SIZE * MEM_BLOCK_SIZE;
+    uint64 endAddress = ((uint64)HEAP_END_ADDR) / MEM_BLOCK_SIZE * MEM_BLOCK_SIZE;
+    uint64 blockCnt = (endAddress - startAddress) / MEM_BLOCK_SIZE;
     uint64 address = startAddress;
     if ((uint64)mainThread != startAddress + MEM_BLOCK_SIZE) {
-        _printString("Main thread bad alloc\n");
+        _printString("!!! Main thread bad alloc\n");
+    } else {
+        _printString("Main thread alloc correct\n");
     }
     address += 3 * MEM_BLOCK_SIZE + MEM_BLOCK_SIZE;
 
     size_t firstSize = 20 * MEM_BLOCK_SIZE;
     void* first = mem_alloc(firstSize);
     if ((uint64)first != address) {
-        _printString("First bad alloc\n");
+        _printString("!!! First bad alloc\n");
+    } else {
+        _printString("First alloc correct\n");
     }
     address += firstSize + MEM_BLOCK_SIZE;
 
     size_t secondSize = 50 * MEM_BLOCK_SIZE;
     void* second = mem_alloc(secondSize);
     if ((uint64)second != address) {
-        _printString("Second bad alloc\n");
+        _printString("!!! Second bad alloc\n");
+    } else {
+        _printString("Second alloc correct\n");
     }
     address += secondSize + MEM_BLOCK_SIZE;
 
     size_t thirdSize = 10 * MEM_BLOCK_SIZE;
     void* third = mem_alloc(thirdSize);
     if ((uint64)third != address) {
-        _printString("Third bad alloc\n");
+        _printString("!!! Third bad alloc\n");
+    } else {
+        _printString("Third alloc correct\n");
     }
     address += thirdSize;
 
-    mem_free(second);
+    void* badSize = mem_alloc(blockCnt * MEM_BLOCK_SIZE);
+    if (badSize != nullptr) {
+        _printString("!!! Bad size allocated\n");
+    } else {
+        _printString("Bad size correct\n");
+    }
+
+    int secondFree = mem_free(second);
+    if (secondFree != 0) {
+        _printString("!!! Second free failed\n");
+    } else {
+        _printString("Second free success\n");
+    }
+
+    int doubleFree = mem_free(second);
+    if (doubleFree == 0) {
+        _printString("!!! Double free success\n");
+    } else {
+        _printString("Double free failed\n");
+    }
+
+    int closeFree = mem_free((void*)((uint64)second + 20 * MEM_BLOCK_SIZE));
+    if (closeFree == 0) {
+        _printString("!!! Close free success\n");
+    } else {
+        _printString("Close free failed\n");
+    }
 
     size_t forthSize = 30 * MEM_BLOCK_SIZE;
     void* forth = mem_alloc(forthSize);
     if ((uint64)second != (uint64)forth) {
-        _printString("Forth bad alloc\n");
+        _printString("!!! Forth bad alloc\n");
+    } else {
+        _printString("Forth alloc correct\n");
     }
 
     mem_free(third);
     mem_free(first);
     mem_free(forth);
+
+    int badFree = mem_free((void*)(endAddress - 15));
+    if (badFree == 0) {
+        _printString("!!! Bad free went through!\n");
+    } else {
+        _printString("Bad free errored out\n");
+    }
 }
 
 void testThreads() {
     thread_t idleThread = nullptr;
     IdleDone done;
     thread_create(&idleThread, idle, &done);
+
+    int noHandle = thread_create(nullptr, workerBodyA, nullptr);
+    if (noHandle == 0) {
+        _printString("!!! Thread with null handle created\n");
+    } else {
+        _printString("Null handle thread ignored\n");
+    }
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerBodyA, nullptr);
@@ -87,16 +139,58 @@ void testThreads() {
     thread_create(&handle3, workerBodyD, nullptr);
     _printString("ThreadD created\n");
 
-    // while (handle0->getState() != _thread::FINISHED) {
-    //     thread_dispatch();
-    // }
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED &&
+        handle2->getState() == _thread::FINISHED &&
+        handle3->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+    }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+    delete handle2;
+    delete handle3;
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
+
+void testSemClose() {
+    sem_t sem = nullptr;
+    sem_open(&sem, 0);
+
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workerSemWaitCloseA, sem);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workerSemWaitCloseB, sem);
+    _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workerSemWaitCloseC, sem);
+    _printString("ThreadC created\n");
+
+    thread_t handle3 = nullptr;
+    thread_create(&handle3, workerSemWaitCloser, sem);
+    _printString("ThreadD created\n");
 
     while (!(handle0->getState() == _thread::FINISHED &&
         handle1->getState() == _thread::FINISHED &&
         handle2->getState() == _thread::FINISHED &&
         handle3->getState() == _thread::FINISHED)) {
         thread_dispatch();
-        }
+    }
 
     _printString("Threads done\n");
     done.done = true;
@@ -115,7 +209,6 @@ void testThreads() {
 
 // TODO: Test sem:
 // Signal on a sem that no one is waiting on
-// Wait with several threads and call close
 // Try doing stuff while closed
 // Signal frees all waiting threads
 // Signal frees a subset of waiting threads
@@ -128,8 +221,9 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
-    testThreads();
-    // testMemory(mainThread);
+    // testThreads();
+    testMemory(mainThread);
+    testSemClose();
 
     _printString("Main done\n");
 

@@ -10,4 +10,9 @@ extern void workerBodyB(void*);
 extern void workerBodyC(void*);
 extern void workerBodyD(void*);
 
+extern void workerSemWaitCloseA(void* sem);
+extern void workerSemWaitCloseB(void* sem);
+extern void workerSemWaitCloseC(void* sem);
+extern void workerSemWaitCloser(void* sem);
+
 #endif
