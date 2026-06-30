@@ -238,9 +238,19 @@ extern void workersWaitOne(void* ptr) {
     _printString("\n");
 }
 
+extern void workersWaitOneSmall(void* ptr) {
+    _printString("Waiting small\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait_n(sem, 2);
+    _printString("Waiting small unblocked: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
 extern void workersSignalMany(void* ptr) {
     sem_t sem = (sem_t)ptr;
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         _printString("Signaling 2\n");
         int ret = sem_signal_n(sem, 2);
         _printString("Signaling done: ");
@@ -251,6 +261,14 @@ extern void workersSignalMany(void* ptr) {
     }
 }
 
+extern void workersSleep0(void*) {
+    _printString("Sleeping for 0\n");
+
+    time_sleep(0);
+
+    _printString("0 woke up\n");
+}
+
 extern void workersSleep50(void*) {
     _printString("Sleeping for 50\n");
 
@@ -258,6 +276,7 @@ extern void workersSleep50(void*) {
 
     _printString("50 woke up\n");
 }
+
 extern void workersSleep60(void*) {
     _printString("Sleeping for 60\n");
 

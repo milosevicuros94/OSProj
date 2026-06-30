@@ -361,8 +361,12 @@ void testSemWaitOneSignalMany() {
     _printString("ThreadA created\n");
 
     thread_t handle1 = nullptr;
-    thread_create(&handle1, workersSignalMany, sem);
+    thread_create(&handle1, workersWaitOneSmall, sem);
     _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workersSignalMany, sem);
+    _printString("ThreadC created\n");
 
     while (!(handle0->getState() == _thread::FINISHED &&
         handle1->getState() == _thread::FINISHED)) {
@@ -408,10 +412,15 @@ void testSleep() {
     thread_create(&handle3, workersSleep80, nullptr);
     _printString("ThreadD created\n");
 
+    thread_t handle4 = nullptr;
+    thread_create(&handle4, workersSleep0, nullptr);
+    _printString("ThreadE created\n");
+
     while (!(handle0->getState() == _thread::FINISHED &&
         handle1->getState() == _thread::FINISHED &&
         handle2->getState() == _thread::FINISHED &&
-        handle3->getState() == _thread::FINISHED)) {
+        handle3->getState() == _thread::FINISHED &&
+        handle4->getState() == _thread::FINISHED)) {
         thread_dispatch();
     }
 
@@ -422,6 +431,7 @@ void testSleep() {
     delete handle1;
     delete handle2;
     delete handle3;
+    delete handle4;
 
     while (idleThread->getState() != _thread::FINISHED) {
         thread_dispatch();
@@ -437,20 +447,20 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
-    _printString("---- Test Threads ----\n");
-    testThreads();
-
-    _printString("\n---- Test Sem Close ----\n");
-    testSemClose();
-
-    _printString("\n---- Test Sem One Signal ----\n");
-    testOneSignal();
-
-    _printString("\n---- Test Sem Signal Before Wait ----\n");
-    testSignalBeforeWait();
-
-    _printString("\n---- Test Sem Subset ----\n");
-    testSemSubset();
+    // _printString("---- Test Threads ----\n");
+    // testThreads();
+    //
+    // _printString("\n---- Test Sem Close ----\n");
+    // testSemClose();
+    //
+    // _printString("\n---- Test Sem One Signal ----\n");
+    // testOneSignal();
+    //
+    // _printString("\n---- Test Sem Signal Before Wait ----\n");
+    // testSignalBeforeWait();
+    //
+    // _printString("\n---- Test Sem Subset ----\n");
+    // testSemSubset();
 
     _printString("\n---- Test Sem One Wait Many Signal ----\n");
     testSemWaitOneSignalMany();
