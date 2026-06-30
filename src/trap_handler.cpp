@@ -117,7 +117,7 @@ void TrapHandler::handleInternal() {
                 if (sem == nullptr) {
                     Riscv::sd_a0(-10);
                 } else {
-                    int ret = sem->signal(n);
+                    int ret = sem->wait(n);
                     Riscv::sd_a0(ret);
                 }
 

@@ -207,12 +207,184 @@ void testSemClose() {
     delete idleThread;
 }
 
-// TODO: Test sem:
-// Signal on a sem that no one is waiting on
-// Try doing stuff while closed
-// Signal frees all waiting threads
-// Signal frees a subset of waiting threads
-// Multiple signals needed to free first thread
+void testOneSignal() {
+    sem_t sem = nullptr;
+    sem_open(&sem, 0);
+
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workerSemWaitOneSignal, sem);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workerSemWaitOneSignal, sem);
+    _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workerSemWaitOneSignal, sem);
+    _printString("ThreadC created\n");
+
+    thread_t handle3 = nullptr;
+    thread_create(&handle3, workerSemOneSignal, sem);
+    _printString("ThreadD created\n");
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED &&
+        handle2->getState() == _thread::FINISHED &&
+        handle3->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+    }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+    delete handle2;
+    delete handle3;
+
+    int ret = sem_close(sem);
+    _printString("Sem close result: ");
+    _printInteger(ret);
+    _printString("\n");
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
+
+void testSignalBeforeWait() {
+    sem_t sem = nullptr;
+    sem_open(&sem, 2);
+
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workerSignalFirst, sem);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workerWaitAfterSignal, sem);
+    _printString("ThreadB created\n");
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+        }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+
+    int ret = sem_close(sem);
+    _printString("Sem close result: ");
+    _printInteger(ret);
+    _printString("\n");
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
+
+void testSemSubset() {
+    sem_t sem = nullptr;
+    sem_open(&sem, 0);
+
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workersWaitSubset, sem);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workersWaitSubset, sem);
+    _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workersWaitSubset, sem);
+    _printString("ThreadC created\n");
+
+    thread_t handle3 = nullptr;
+    thread_create(&handle3, workersSignalSubset, sem);
+    _printString("ThreadD created\n");
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED &&
+        handle2->getState() == _thread::FINISHED &&
+        handle3->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+    }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+    delete handle2;
+    delete handle3;
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
+
+void testSleep() {
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workersSleep50, nullptr);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workersSleep60, nullptr);
+    _printString("ThreadB created\n");
+
+    thread_t handle2 = nullptr;
+    thread_create(&handle2, workersSleep150, nullptr);
+    _printString("ThreadC created\n");
+
+    thread_t handle3 = nullptr;
+    thread_create(&handle3, workersSleep80, nullptr);
+    _printString("ThreadD created\n");
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED &&
+        handle2->getState() == _thread::FINISHED &&
+        handle3->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+    }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+    delete handle2;
+    delete handle3;
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
 
 int main() {
     // OR 1 for vector mode
@@ -221,11 +393,31 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
+    // _printString("---- Test Threads ----\n");
     // testThreads();
-    testMemory(mainThread);
-    testSemClose();
 
-    _printString("Main done\n");
+    // _printString("\n---- Test Memory ----\n");
+    // testMemory(mainThread);
+
+    // _printString("\n---- Test Sem Close ----\n");
+    // testSemClose();
+
+    // _printString("\n---- Test Sem One Signal ----\n");
+    // testOneSignal();
+
+    // _printString("\n---- Test Sem Signal Before Wait ----\n");
+    // testSignalBeforeWait();
+
+    // _printString("\n---- Test Sem Subset ----\n");
+    // testSemSubset();
+
+    _printString("\n---- Test Sleep ----\n");
+    testSleep();
+
+    int ret = mem_free(mainThread);
+    _printString("Main done. Cleanup: ");
+    _printInteger(ret);
+    _printString("\n");
 
     return 0;
 }

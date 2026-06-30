@@ -151,3 +151,110 @@ void workerSemWaitCloser(void* ptr) {
     _printInteger(ret);
     _printString("\n");
 }
+
+extern void workerSemWaitOneSignal(void* ptr) {
+    _printString("Waiting for one signal\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait_n(sem, 2);
+    _printString("Waiting unblocked: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workerSemOneSignal(void* ptr) {
+    _printString("Sleeping before signal\n");
+
+    time_sleep(100);
+
+    _printString("Signaling to unblock all\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_signal_n(sem, 6);
+    _printString("Signaling done: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workerSignalFirst(void* ptr) {
+    _printString("Signal first\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_signal_n(sem, 2);
+    _printString("Signaling done: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workerWaitAfterSignal(void* ptr) {
+    _printString("Waiting after signal\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait_n(sem, 4);
+    _printString("Waiting immediately went through: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workersWaitSubset(void* ptr) {
+    _printString("Waiting for subset signal\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait_n(sem, 2);
+    _printString("Waiting unblocked: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workersSignalSubset(void* ptr) {
+    _printString("Sleeping before signal\n");
+
+    time_sleep(100);
+
+    _printString("Signaling to unblock subset\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_signal_n(sem, 5);
+    _printString("Signaling 5 done: ");
+    _printInteger(ret);
+    _printString("\n");
+
+    _printString("Sleeping before signal\n");
+    time_sleep(100);
+
+    ret = sem_signal(sem);
+    _printString("Signaling 1 done: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workersSleep50(void*) {
+    _printString("Sleeping for 50\n");
+
+    time_sleep(50);
+
+    _printString("50 woke up\n");
+}
+extern void workersSleep60(void*) {
+    _printString("Sleeping for 60\n");
+
+    time_sleep(60);
+
+    _printString("60 woke up\n");
+}
+
+extern void workersSleep150(void*) {
+    _printString("Sleeping for 150\n");
+
+    time_sleep(150);
+
+    _printString("150 woke up\n");
+}
+
+extern void workersSleep80(void*) {
+    _printString("Sleeping for 80\n");
+
+    time_sleep(80);
+
+    _printString("80 woke up\n");
+}
