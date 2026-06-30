@@ -1,6 +1,5 @@
 #include "../inc/thread.hpp"
 #include "../inc/riscv.hpp"
-#include "../inc/tests.hpp"
 
 extern void userMain();
 
