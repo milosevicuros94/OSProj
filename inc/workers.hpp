@@ -24,6 +24,9 @@ extern void workerWaitAfterSignal(void* ptr);
 extern void workersWaitSubset(void* ptr);
 extern void workersSignalSubset(void* ptr);
 
+extern void workersWaitOne(void* ptr);
+extern void workersSignalMany(void* ptr);
+
 extern void workersSleep50(void* ptr);
 extern void workersSleep60(void* ptr);
 extern void workersSleep150(void* ptr);

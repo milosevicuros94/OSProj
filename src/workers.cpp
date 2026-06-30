@@ -136,7 +136,7 @@ void workerSemWaitCloseC(void* ptr)  {
 
 void workerSemWaitCloser(void* ptr) {
     _printString("Closer sleeping\n");
-    time_sleep(100);
+    time_sleep(50);
 
     _printString("Closing sem\n");
 
@@ -226,6 +226,29 @@ extern void workersSignalSubset(void* ptr) {
     _printString("Signaling 1 done: ");
     _printInteger(ret);
     _printString("\n");
+}
+
+extern void workersWaitOne(void* ptr) {
+    _printString("Waiting large\n");
+
+    sem_t sem = (sem_t)ptr;
+    int ret = sem_wait_n(sem, 8);
+    _printString("Waiting large unblocked: ");
+    _printInteger(ret);
+    _printString("\n");
+}
+
+extern void workersSignalMany(void* ptr) {
+    sem_t sem = (sem_t)ptr;
+    for (int i = 0; i < 4; i++) {
+        _printString("Signaling 2\n");
+        int ret = sem_signal_n(sem, 2);
+        _printString("Signaling done: ");
+        _printInteger(ret);
+        _printString("\n");
+
+        time_sleep(30);
+    }
 }
 
 extern void workersSleep50(void*) {

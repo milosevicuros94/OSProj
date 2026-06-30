@@ -336,6 +336,50 @@ void testSemSubset() {
     delete handle2;
     delete handle3;
 
+    int ret = sem_close(sem);
+    _printString("Sem close result: ");
+    _printInteger(ret);
+    _printString("\n");
+
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+
+    delete idleThread;
+}
+
+void testSemWaitOneSignalMany() {
+    sem_t sem = nullptr;
+    sem_open(&sem, 0);
+
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
+
+    thread_t handle0 = nullptr;
+    thread_create(&handle0, workersWaitOne, sem);
+    _printString("ThreadA created\n");
+
+    thread_t handle1 = nullptr;
+    thread_create(&handle1, workersSignalMany, sem);
+    _printString("ThreadB created\n");
+
+    while (!(handle0->getState() == _thread::FINISHED &&
+        handle1->getState() == _thread::FINISHED)) {
+        thread_dispatch();
+        }
+
+    _printString("Threads done\n");
+    done.done = true;
+
+    delete handle0;
+    delete handle1;
+
+    int ret = sem_close(sem);
+    _printString("Sem close result: ");
+    _printInteger(ret);
+    _printString("\n");
+
     while (idleThread->getState() != _thread::FINISHED) {
         thread_dispatch();
     }
@@ -393,26 +437,29 @@ int main() {
     _thread* mainThread = (_thread*) mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
-    // _printString("---- Test Threads ----\n");
-    // testThreads();
+    _printString("---- Test Threads ----\n");
+    testThreads();
 
-    // _printString("\n---- Test Memory ----\n");
-    // testMemory(mainThread);
+    _printString("\n---- Test Sem Close ----\n");
+    testSemClose();
 
-    // _printString("\n---- Test Sem Close ----\n");
-    // testSemClose();
+    _printString("\n---- Test Sem One Signal ----\n");
+    testOneSignal();
 
-    // _printString("\n---- Test Sem One Signal ----\n");
-    // testOneSignal();
+    _printString("\n---- Test Sem Signal Before Wait ----\n");
+    testSignalBeforeWait();
 
-    // _printString("\n---- Test Sem Signal Before Wait ----\n");
-    // testSignalBeforeWait();
+    _printString("\n---- Test Sem Subset ----\n");
+    testSemSubset();
 
-    // _printString("\n---- Test Sem Subset ----\n");
-    // testSemSubset();
+    _printString("\n---- Test Sem One Wait Many Signal ----\n");
+    testSemWaitOneSignalMany();
 
     _printString("\n---- Test Sleep ----\n");
     testSleep();
+
+    _printString("\n---- Test Memory ----\n");
+    testMemory(mainThread);
 
     int ret = mem_free(mainThread);
     _printString("Main done. Cleanup: ");
