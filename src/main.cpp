@@ -4,22 +4,22 @@
 #include "../inc/tests.hpp"
 
 extern void userMain();
-//
-// void userMainWrapper(void*) {
-//     userMain();
-// }
 
-// struct IdleDone {
-//     volatile bool done = false;
-// };
-//
-// void idle(void* arg) {
-//     IdleDone *done = (IdleDone *)arg;
-//     while (!done->done) {
-//         thread_dispatch();
-//     }
-//     _printString("Idle done\n");
-// }
+void userMainWrapper(void*) {
+    userMain();
+}
+
+struct IdleDone {
+    volatile bool done = false;
+};
+
+void idle(void* arg) {
+    IdleDone *done = (IdleDone *)arg;
+    while (!done->done) {
+        thread_dispatch();
+    }
+    _printString("Idle done\n");
+}
 
 int main() {
     Riscv::set_stvec_handlers();
@@ -27,35 +27,20 @@ int main() {
     _thread* mainThread = (_thread*)mem_alloc(sizeof(_thread));
     mainThread->initMainThread();
 
-    _printString("---- Test Threads ----\n");
-    testThreads();
+    thread_t idleThread = nullptr;
+    IdleDone done;
+    thread_create(&idleThread, idle, &done);
 
-    _printString("\n---- Test Sem Close ----\n");
-    testSemClose();
+    runAllTests(mainThread);
 
-    _printString("\n---- Test Sem One Signal ----\n");
-    testOneSignal();
+    done.done = true;
+    while (idleThread->getState() != _thread::FINISHED) {
+        thread_dispatch();
+    }
+    delete idleThread;
 
-    _printString("\n---- Test Sem Signal Before Wait ----\n");
-    testSignalBeforeWait();
-
-    _printString("\n---- Test Sem Subset ----\n");
-    testSemSubset();
-
-    _printString("\n---- Test Sem One Wait Many Signal ----\n");
-    testSemWaitOneSignalMany();
-
-    _printString("\n---- Test Sleep ----\n");
-    testSleep();
-
-    _printString("\n---- Test Memory ----\n");
-    testMemory(mainThread);
-
-    int ret = mem_free(mainThread);
-
-    _printString("Main done. Cleanup: ");
-    _printInteger(ret);
-    _printString("\n");
+    mem_free(mainThread);
+    _printString("Main done.");
 
     return 0;
 }

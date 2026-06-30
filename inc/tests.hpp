@@ -8,3 +8,4 @@ extern void testSignalBeforeWait();
 extern void testSemSubset();
 extern void testSemWaitOneSignalMany();
 extern void testSleep();
+extern void runAllTests(thread_t mainThread);

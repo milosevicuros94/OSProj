@@ -37,7 +37,7 @@ void Thread::dispatch() {
     thread_dispatch();
 }
 
-int sleep(time_t time) {
+int Thread::sleep(time_t time) {
     return time_sleep(time);
 }
 

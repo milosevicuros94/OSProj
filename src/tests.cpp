@@ -2,18 +2,6 @@
 #include "../inc/printing.hpp"
 #include "../inc/workers.hpp"
 
-struct IdleDone {
-    volatile bool done = false;
-};
-
-void idle(void* arg) {
-    IdleDone *done = (IdleDone *)arg;
-    while (!done->done) {
-        thread_dispatch();
-    }
-    _printString("Idle done\n");
-}
-
 void testMemory(_thread* mainThread) {
     uint64 startAddress = ((uint64)HEAP_START_ADDR + MEM_BLOCK_SIZE - 1) / MEM_BLOCK_SIZE * MEM_BLOCK_SIZE;
     uint64 endAddress = ((uint64)HEAP_END_ADDR) / MEM_BLOCK_SIZE * MEM_BLOCK_SIZE;
@@ -25,6 +13,7 @@ void testMemory(_thread* mainThread) {
         _printString("Main thread alloc correct\n");
     }
     address += 3 * MEM_BLOCK_SIZE + MEM_BLOCK_SIZE;
+    address += 68 * MEM_BLOCK_SIZE; // Idle thread
 
     size_t firstSize = 20 * MEM_BLOCK_SIZE;
     void* first = mem_alloc(firstSize);
@@ -102,10 +91,6 @@ void testMemory(_thread* mainThread) {
 }
 
 void testThreads() {
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
-
     int noHandle = thread_create(nullptr, workerBodyA, nullptr);
     if (noHandle == 0) {
         _printString("!!! Thread with null handle created\n");
@@ -137,27 +122,16 @@ void testThreads() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
     delete handle2;
     delete handle3;
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testSemClose() {
     sem_t sem = nullptr;
     sem_open(&sem, 0);
-
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerSemWaitCloseA, sem);
@@ -183,27 +157,16 @@ void testSemClose() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
     delete handle2;
     delete handle3;
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testOneSignal() {
     sem_t sem = nullptr;
     sem_open(&sem, 0);
-
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerSemWaitOneSignal, sem);
@@ -229,7 +192,7 @@ void testOneSignal() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
+
 
     delete handle0;
     delete handle1;
@@ -240,21 +203,11 @@ void testOneSignal() {
     _printString("Sem close result: ");
     _printInteger(ret);
     _printString("\n");
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testSignalBeforeWait() {
     sem_t sem = nullptr;
     sem_open(&sem, 2);
-
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workerSignalFirst, sem);
@@ -270,7 +223,6 @@ void testSignalBeforeWait() {
         }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
@@ -279,21 +231,11 @@ void testSignalBeforeWait() {
     _printString("Sem close result: ");
     _printInteger(ret);
     _printString("\n");
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testSemSubset() {
     sem_t sem = nullptr;
     sem_open(&sem, 0);
-
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workersWaitSubset, sem);
@@ -319,7 +261,6 @@ void testSemSubset() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
@@ -330,21 +271,11 @@ void testSemSubset() {
     _printString("Sem close result: ");
     _printInteger(ret);
     _printString("\n");
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testSemWaitOneSignalMany() {
     sem_t sem = nullptr;
     sem_open(&sem, 0);
-
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
 
     thread_t handle0 = nullptr;
     thread_create(&handle0, workersWaitOne, sem);
@@ -364,7 +295,6 @@ void testSemWaitOneSignalMany() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
@@ -373,19 +303,9 @@ void testSemWaitOneSignalMany() {
     _printString("Sem close result: ");
     _printInteger(ret);
     _printString("\n");
-
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
-
-    delete idleThread;
 }
 
 void testSleep() {
-    thread_t idleThread = nullptr;
-    IdleDone done;
-    thread_create(&idleThread, idle, &done);
-
     thread_t handle0 = nullptr;
     thread_create(&handle0, workersSleep50, nullptr);
     _printString("ThreadA created\n");
@@ -415,17 +335,36 @@ void testSleep() {
     }
 
     _printString("Threads done\n");
-    done.done = true;
 
     delete handle0;
     delete handle1;
     delete handle2;
     delete handle3;
     delete handle4;
+}
 
-    while (idleThread->getState() != _thread::FINISHED) {
-        thread_dispatch();
-    }
+void runAllTests(thread_t mainThread) {
+    _printString("---- Test Threads ----\n");
+    testThreads();
 
-    delete idleThread;
+    _printString("\n---- Test Sem Close ----\n");
+    testSemClose();
+
+    _printString("\n---- Test Sem One Signal ----\n");
+    testOneSignal();
+
+    _printString("\n---- Test Sem Signal Before Wait ----\n");
+    testSignalBeforeWait();
+
+    _printString("\n---- Test Sem Subset ----\n");
+    testSemSubset();
+
+    _printString("\n---- Test Sem One Wait Many Signal ----\n");
+    testSemWaitOneSignalMany();
+
+    _printString("\n---- Test Sleep ----\n");
+    testSleep();
+
+    _printString("\n---- Test Memory ----\n");
+    testMemory(mainThread);
 }
