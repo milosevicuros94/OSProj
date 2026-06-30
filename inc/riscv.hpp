@@ -3,6 +3,8 @@
 
 #include "../lib/hw.h"
 
+extern "C" void handlers();
+
 class Riscv {
 public:
     enum BitMaskSip {
@@ -39,6 +41,7 @@ public:
 
     static uint64 r_stvec();
     static void w_stvec(uint64 stvec);
+    static void set_stvec_handlers();
 
     static uint64 r_stval();
     static void w_stval(uint64 stval);
@@ -75,6 +78,7 @@ public:
     template <typename T> static void sd_a6(T t);
     template <typename T> static void sd_a7(T t);
 
+    static void kill();
 };
 
 inline uint64 Riscv::r_scause() {
@@ -101,6 +105,10 @@ inline uint64 Riscv::r_stvec() {
     uint64 volatile stvec;
     __asm__ volatile ("csrr %[stvec], stvec" : [stvec] "=r"(stvec));
     return stvec;
+}
+
+inline void Riscv::set_stvec_handlers() {
+    w_stvec((uint64)handlers | 1);
 }
 
 inline void Riscv::w_stvec(uint64 stvec) {

@@ -10,28 +10,28 @@ void _printString(const char *string) {
     }
 }
 
-void _printInteger(uint64 integer) {
-    static char digits[] = "0123456789";
+void _printInteger(int xx, int base, int sgn) {
+    char digits[] = "0123456789ABCDEF";
     char buf[16];
     int i, neg;
-    uint64 x;
+    uint x;
 
     neg = 0;
-    if (integer < 0) {
+    if(sgn && xx < 0){
         neg = 1;
-        x = -integer;
+        x = -xx;
     } else {
-        x = integer;
+        x = xx;
     }
 
     i = 0;
-    do
-    {
-        buf[i++] = digits[x % 10];
-    } while ((x /= 10) != 0);
-
-    if (neg)
+    do{
+        buf[i++] = digits[x % base];
+    }while((x /= base) != 0);
+    if(neg)
         buf[i++] = '-';
 
-    while (--i >= 0) { putc(buf[i]); }
+    while(--i >= 0)
+        putc(buf[i]);
+
 }

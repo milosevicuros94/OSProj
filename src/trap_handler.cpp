@@ -156,19 +156,25 @@ void TrapHandler::handleInternal() {
                 break;
             }
             default:
-                _printString("Unexpected call type");
+                _printString("Unexpected call type: ");
+                _printInteger(call, 16);
+                _printString("\n");
+                return;
         }
 
         Riscv::w_sstatus(sstatus);
         Riscv::w_sepc(sepc);
     } else {
         _printString("Unexpected trap cause\n");
-        // _printInteger(scause);
-        // _printString("\n");
-        // _printInteger(sepc);
-        // _printString("\n");
-        // _printInteger(Riscv::r_stval());
-        // _printString("\n");
+        _printString("scause: ");
+        _printInteger(scause, 16);
+        _printString("; sepc: ");
+        _printInteger(sepc, 16);
+        _printString("; stval: ");
+        _printInteger(Riscv::r_stval(), 16);
+        _printString("\n");
+
+        Riscv::kill();
     }
 }
 

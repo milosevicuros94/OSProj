@@ -4,6 +4,6 @@
 #include "../lib/hw.h"
 
 void _printString(char const *string);
-void _printInteger(uint64 integer);
+void _printInteger(int xx, int base=10, int sgn=0);
 
-#endif // _PRINTING_HPP
+#endif
