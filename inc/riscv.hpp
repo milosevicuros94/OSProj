@@ -107,12 +107,12 @@ inline uint64 Riscv::r_stvec() {
     return stvec;
 }
 
-inline void Riscv::set_stvec_handlers() {
-    w_stvec((uint64)handlers | 1);
-}
-
 inline void Riscv::w_stvec(uint64 stvec) {
     __asm__ volatile ("csrw stvec, %[stvec]" : : [stvec] "r"(stvec));
+}
+
+inline void Riscv::set_stvec_handlers() {
+    w_stvec((uint64)handlers | 1);
 }
 
 inline uint64 Riscv::r_stval() {

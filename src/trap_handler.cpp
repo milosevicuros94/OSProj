@@ -181,9 +181,9 @@ void TrapHandler::handleTimer() {
     Riscv::mc_sip(Riscv::SIP_SSIP);
 
     Scheduler::getInstance().timerTick();
-    bool shouldSwitch = _thread::timerTick();
+    bool timeSliceExpired = _thread::timerTick();
 
-    if (shouldSwitch) {
+    if (timeSliceExpired) {
         volatile uint64 sepc = Riscv::r_sepc();
         volatile uint64 sstatus = Riscv::r_sstatus();
         _thread::dispatch();

@@ -48,9 +48,7 @@ void _thread::dispatch() {
     running = Scheduler::getInstance().getReady();
     timeSliceCounter = 0;
 
-    if (oldRunning != running) {
-        contextSwitch(&oldRunning->context, &running->context);
-    }
+    contextSwitch(&oldRunning->context, &running->context);
 }
 
 // TRUE if thread time slice expired. FALSE otherwise

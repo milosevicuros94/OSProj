@@ -31,6 +31,8 @@ private:
     static void tryToJoin(Descriptor* first, Descriptor* second);
 
     Descriptor* freeHead;
+    size_t startBlock;
+    size_t endBlock;
 };
 
 #endif

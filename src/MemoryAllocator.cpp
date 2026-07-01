@@ -6,13 +6,12 @@ MemoryAllocator &MemoryAllocator::getInstance() {
 }
 
 MemoryAllocator::MemoryAllocator() {
-    size_t startBlock = ceilToBlock((size_t)HEAP_START_ADDR);
-    size_t endBlock = floorToBlock((size_t)HEAP_END_ADDR);
-    size_t sizeInBlocks = endBlock - startBlock;
+    startBlock = ceilToBlock((size_t)HEAP_START_ADDR);
+    endBlock = floorToBlock((size_t)HEAP_END_ADDR);
 
-    Descriptor* initial = (Descriptor*)(blocksToBytes(startBlock));
+    Descriptor* initial = (Descriptor*)blocksToBytes(startBlock);
     initial->next = nullptr;
-    initial->sizeInBlocks = sizeInBlocks;
+    initial->sizeInBlocks = endBlock - startBlock;
 
     freeHead = initial;
 }
@@ -70,8 +69,8 @@ int MemoryAllocator::free(void *address) {
 
     Descriptor* allocated = (Descriptor*)((size_t)address - blocksToBytes(1));
 
-    if ((size_t)allocated < blocksToBytes(ceilToBlock((size_t)HEAP_START_ADDR)) ||
-        (size_t)allocated >= blocksToBytes(floorToBlock((size_t)HEAP_END_ADDR))) {
+    if ((size_t)allocated < blocksToBytes(startBlock) ||
+        (size_t)allocated >= blocksToBytes(endBlock)) {
         return -3;
     }
 

@@ -1,7 +1,6 @@
 #ifndef _THREAD_HPP_
 #define _THREAD_HPP_
 
-#include "../lib/hw.h"
 #include "../inc/syscall_c.h"
 
 class _thread {
@@ -26,7 +25,7 @@ public:
     inline void setState(ThreadState newState) { state = newState; }
 
     inline _thread* getNext() { return next; }
-    inline void setNext(_thread* t) { next = t; }
+    inline void setNext(thread_t t) { next = t; }
 
     inline time_t getSleepTime() { return sleepTime; }
     inline void setSleepTime(time_t newSleepTime) { sleepTime = newSleepTime; }
@@ -65,7 +64,6 @@ private:
     time_t sleepTime;
 
     friend class TrapHandler;
-
 };
 
 #endif

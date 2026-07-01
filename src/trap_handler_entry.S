@@ -34,14 +34,14 @@ internal:
 
 timer:
     pushRegisters
-    addi s0, sp, 256
+    mv s0, sp
     call _ZN11TrapHandler11handleTimerEv
     popRegisters
     sret
 
 external:
     pushRegisters
-    addi s0, sp, 256
+    mv s0, sp
     call _ZN11TrapHandler14handleExternalEv
     popRegisters
     sret
