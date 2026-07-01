@@ -70,7 +70,7 @@ int MemoryAllocator::free(void *address) {
     Descriptor* allocated = (Descriptor*)((size_t)address - blocksToBytes(1));
 
     if ((size_t)allocated < blocksToBytes(startBlock) ||
-        (size_t)allocated >= blocksToBytes(endBlock)) {
+        (size_t)allocated >= blocksToBytes(endBlock - 1)) {
         return -3;
     }
 
