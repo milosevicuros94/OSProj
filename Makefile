@@ -1,6 +1,6 @@
 DIR_BUILD = build
 DIR_LIBS  = lib
-DIR_INC   = inc
+DIR_INC   = h
 
 DEBUG_FLAG = -D DEBUG_PRINT=0
 

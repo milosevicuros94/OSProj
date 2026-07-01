@@ -1,7 +1,7 @@
 #ifndef _SCHEDULER_HPP_
 #define _SCHEDULER_HPP_
 
-#include "../inc/syscall_c.h"
+#include "syscall_c.h"
 
 class Scheduler {
 public:

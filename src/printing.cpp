@@ -1,5 +1,5 @@
-#include "../inc/printing.hpp"
-#include "../inc/syscall_c.h"
+#include "../h/printing.hpp"
+#include "../h/syscall_c.h"
 
 void _printString(const char *string) {
     while (*string != '\0')

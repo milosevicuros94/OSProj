@@ -1,5 +1,5 @@
-#include "../inc/semaphore.hpp"
-#include "../inc/thread.hpp"
+#include "../h/semaphore.hpp"
+#include "../h/thread.hpp"
 
 _sem::_sem(unsigned init) : resources(init) {
     closed = false;

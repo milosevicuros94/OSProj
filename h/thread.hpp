@@ -1,7 +1,7 @@
 #ifndef _THREAD_HPP_
 #define _THREAD_HPP_
 
-#include "../inc/syscall_c.h"
+#include "syscall_c.h"
 
 class _thread {
 public:

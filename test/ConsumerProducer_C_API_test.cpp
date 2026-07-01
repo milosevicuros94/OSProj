@@ -1,5 +1,5 @@
 
-#include "../inc/syscall_c.h"
+#include "../h/syscall_c.h"
 
 #include "buffer.hpp"
 

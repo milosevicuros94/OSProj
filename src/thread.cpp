@@ -1,6 +1,6 @@
-#include "../inc/thread.hpp"
-#include "../inc/riscv.hpp"
-#include "../inc/scheduler.hpp"
+#include "../h/thread.hpp"
+#include "../h/riscv.hpp"
+#include "../h/scheduler.hpp"
 
 _thread* _thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
@@ -77,8 +77,5 @@ void _thread::wakeUp() {
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
     running->startRoutine(running->arg);
-
-    // We're in user mode here. Need to use syscall
-    // to go to supervisor mode!
     thread_exit();
 }

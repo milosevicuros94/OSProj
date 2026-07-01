@@ -1,4 +1,4 @@
-#include "../inc/riscv.hpp"
+#include "../h/riscv.hpp"
 
 void Riscv::popSppSpie() {
     mc_sstatus(SSTATUS_SPP);

@@ -1,4 +1,4 @@
-#include "../inc/MemoryAllocator.hpp"
+#include "../h/MemoryAllocator.hpp"
 
 MemoryAllocator &MemoryAllocator::getInstance() {
     static MemoryAllocator instance;
@@ -7,7 +7,7 @@ MemoryAllocator &MemoryAllocator::getInstance() {
 
 MemoryAllocator::MemoryAllocator() {
     startBlock = ceilToBlock((size_t)HEAP_START_ADDR);
-    endBlock = floorToBlock((size_t)HEAP_END_ADDR);
+    endBlock = floorToBlock((size_t)HEAP_END_ADDR - 1);
 
     Descriptor* initial = (Descriptor*)blocksToBytes(startBlock);
     initial->next = nullptr;

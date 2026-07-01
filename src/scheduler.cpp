@@ -1,5 +1,5 @@
-#include "../inc/scheduler.hpp"
-#include "../inc/thread.hpp"
+#include "../h/scheduler.hpp"
+#include "../h/thread.hpp"
 
 Scheduler& Scheduler::getInstance() {
     static Scheduler instance;

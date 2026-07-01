@@ -1,12 +1,12 @@
-#include "../inc/thread.hpp"
-#include "../inc/riscv.hpp"
+#include "../h/thread.hpp"
+#include "../h/riscv.hpp"
 
 extern void userMain();
 
 void userMainWrapper(void* ptr) {
-    sem_t sem = (sem_t)ptr;
+    sem_t mainSem = (sem_t)ptr;
     userMain();
-    sem_signal(sem);
+    sem_signal(mainSem);
 }
 
 struct IdleDone {

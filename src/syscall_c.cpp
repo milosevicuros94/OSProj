@@ -1,4 +1,4 @@
-#include "../inc/syscall_c.h"
+#include "../h/syscall_c.h"
 
 template <typename T> T ecall(syscall syscall, ...) {
     T volatile ret;
